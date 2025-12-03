@@ -34,91 +34,91 @@ export async function GET(
       }> = []
       let resolveNext: ((value: void) => void) | null = null
       let isFinished = false
-      let currentStdout = ''
-      let currentStderr = ''
+    let currentStdout = ''
+    let currentStderr = ''
 
       const commandHandle = await sandbox.commands.connect(pid, {
-        onStdout: (chunk: string) => {
-          currentStdout += chunk
+              onStdout: (chunk: string) => {
+                currentStdout += chunk
           // Split multi-line chunks properly
-          const lines = currentStdout.split('\n')
-          currentStdout = lines.pop() || ''
-          for (const line of lines) {
+                const lines = currentStdout.split('\n')
+                currentStdout = lines.pop() || ''
+                for (const line of lines) {
             if (line) {
               logQueue.push({
-                data: `[stdout] ${line}`,
-                stream: 'stdout',
-                timestamp: Date.now(),
+                        data: `[stdout] ${line}`,
+                        stream: 'stdout',
+                        timestamp: Date.now(),
               })
               if (resolveNext) {
                 resolveNext()
                 resolveNext = null
               }
             }
-          }
-        },
-        onStderr: (chunk: string) => {
-          currentStderr += chunk
+                }
+              },
+              onStderr: (chunk: string) => {
+                currentStderr += chunk
           // Split multi-line chunks properly
-          const lines = currentStderr.split('\n')
-          currentStderr = lines.pop() || ''
-          for (const line of lines) {
+                const lines = currentStderr.split('\n')
+                currentStderr = lines.pop() || ''
+                for (const line of lines) {
             if (line) {
               logQueue.push({
-                data: `[stderr] ${line}`,
-                stream: 'stderr',
-                timestamp: Date.now(),
+                        data: `[stderr] ${line}`,
+                        stream: 'stderr',
+                        timestamp: Date.now(),
               })
               if (resolveNext) {
                 resolveNext()
                 resolveNext = null
               }
             }
-          }
-        },
-      })
+                }
+              },
+            })
 
-      // Send any existing output that was already accumulated
-      const existingStdout = commandHandle.stdout || ''
-      const existingStderr = commandHandle.stderr || ''
+            // Send any existing output that was already accumulated
+            const existingStdout = commandHandle.stdout || ''
+            const existingStderr = commandHandle.stderr || ''
 
-      if (existingStdout) {
-        const stdoutLines = existingStdout.split('\n').filter((l) => l)
-        for (const line of stdoutLines) {
+            if (existingStdout) {
+              const stdoutLines = existingStdout.split('\n').filter((l) => l)
+              for (const line of stdoutLines) {
           yield {
-            data: `[stdout] ${line}`,
+                      data: `[stdout] ${line}`,
             stream: 'stdout' as const,
-            timestamp: Date.now(),
+                      timestamp: Date.now(),
           }
-        }
-      }
+              }
+            }
 
-      if (existingStderr) {
-        const stderrLines = existingStderr.split('\n').filter((l) => l)
-        for (const line of stderrLines) {
+            if (existingStderr) {
+              const stderrLines = existingStderr.split('\n').filter((l) => l)
+              for (const line of stderrLines) {
           yield {
-            data: `[stderr] ${line}`,
+                      data: `[stderr] ${line}`,
             stream: 'stderr' as const,
-            timestamp: Date.now(),
+                      timestamp: Date.now(),
           }
-        }
-      }
+              }
+            }
 
       // Wait for command to finish in background
       commandHandle.wait().catch(() => null).then(() => {
-        // Send any remaining buffered output
-        if (currentStdout) {
+            // Send any remaining buffered output
+            if (currentStdout) {
           logQueue.push({
-            data: `[stdout] ${currentStdout}`,
-            stream: 'stdout',
-            timestamp: Date.now(),
+                    data: `[stdout] ${currentStdout}`,
+                    stream: 'stdout',
+                    timestamp: Date.now(),
           })
-        }
-        if (currentStderr) {
+            }
+            if (currentStderr) {
           logQueue.push({
-            data: `[stderr] ${currentStderr}`,
-            stream: 'stderr',
-            timestamp: Date.now(),
+                    data: `[stderr] ${currentStderr}`,
+                    stream: 'stderr',
+                    timestamp: Date.now(),
           })
         }
         isFinished = true

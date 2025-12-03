@@ -106,7 +106,7 @@ export const runCommand = ({ writer }: Params) =>
                 log: log,
                 status: 'stream',
               },
-            })
+          })
           }
 
           // Send final "done" event with exitCode
