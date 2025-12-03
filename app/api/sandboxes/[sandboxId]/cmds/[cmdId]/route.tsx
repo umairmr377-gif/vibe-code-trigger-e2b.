@@ -33,7 +33,7 @@ export async function GET(
       startedAt: Date.now(),
       exitCode: result?.exitCode,
     })
-  } catch (error) {
+  } catch {
     // Command might not exist or sandbox stopped
     return NextResponse.json({
       sandboxId: sandbox.sandboxId,

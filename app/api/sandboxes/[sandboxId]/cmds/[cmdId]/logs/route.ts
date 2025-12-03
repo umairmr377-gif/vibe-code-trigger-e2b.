@@ -155,14 +155,14 @@ export async function GET(
 
             // Close the SSE stream cleanly at the end
             controller.close()
-          } catch (error) {
-            controller.error(error)
+          } catch (streamError) {
+            controller.error(streamError)
           }
         },
       }),
       { headers: { 'Content-Type': 'application/x-ndjson' } }
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Command not found' },
       { status: 404 }

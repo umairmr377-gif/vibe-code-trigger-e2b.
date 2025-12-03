@@ -20,7 +20,7 @@ export async function GET(
     } else {
       return NextResponse.json({ status: 'stopped' })
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ status: 'stopped' })
   }
 }

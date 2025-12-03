@@ -43,15 +43,15 @@ export async function GET(
               controller.enqueue(value)
             }
             controller.close()
-          } catch (error) {
-            controller.error(error)
+          } catch (streamError) {
+            controller.error(streamError)
           } finally {
             reader.releaseLock()
           }
         },
       })
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'File not found in the Sandbox' },
       { status: 404 }
