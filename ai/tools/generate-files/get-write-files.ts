@@ -27,7 +27,7 @@ export function getWriteFiles({ sandbox, toolCallId, writer }: Params) {
       await sandbox.files.write(
         params.files.map((file) => ({
           path: file.path,
-          content: file.content,
+          data: file.data,
         }))
       )
     } catch (error) {

@@ -103,7 +103,7 @@ export const generateFiles = ({ writer, modelId }: Params) =>
         uploaded.length
       } files. Their paths and contents are as follows:
         ${uploaded
-          .map((file) => `Path: ${file.path}\nContent: ${file.content}\n`)
+          .map((file) => `Path: ${file.path}\nContent: ${file.data}\n`)
           .join('\n')}`
     },
   })

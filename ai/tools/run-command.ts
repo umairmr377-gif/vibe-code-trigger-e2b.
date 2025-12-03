@@ -76,7 +76,8 @@ export const runCommand = ({ writer }: Params) =>
           const run = await runs.retrieve(handle.id)
 
           if (run.status === 'FAILED' || run.status === 'CRASHED') {
-            throw new Error(run.error || 'Task failed')
+            const errorMessage = typeof run.error === 'string' ? run.error : run.error?.message || 'Task failed'
+            throw new Error(errorMessage)
           }
 
           if (run.status !== 'COMPLETED') {
@@ -88,22 +89,25 @@ export const runCommand = ({ writer }: Params) =>
             throw new Error('Task returned no output')
           }
 
+          const exitCode = result.exitCode
+          const commandId = result.commandId || null
+          // Ensure sandboxId is always a string (task may return null, but tool requires string)
+          const resultSandboxId = (result.sandboxId || sandboxId) as string
+
           // Stream logs from task result (logs are already strings with [stdout]/[stderr] prefixes)
           for (const log of result.logs) {
             writer.write({
               id: toolCallId,
               type: 'data-run-command',
               data: {
+                sandboxId: resultSandboxId,
+                command,
+                args,
                 log: log,
                 status: 'stream',
               },
             })
           }
-
-          const exitCode = result.exitCode
-          const commandId = result.commandId || null
-          // Ensure sandboxId is always a string (task may return null, but tool requires string)
-          const resultSandboxId = (result.sandboxId || sandboxId) as string
 
           // Send final "done" event with exitCode
           writer.write({

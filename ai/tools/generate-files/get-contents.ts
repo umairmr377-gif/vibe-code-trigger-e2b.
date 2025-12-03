@@ -11,10 +11,10 @@ const fileSchema = z.object({
     .describe(
       "Path to the file in the Vercel Sandbox (relative paths from sandbox root, e.g., 'src/main.js', 'package.json', 'components/Button.tsx')"
     ),
-  content: z
+  data: z
     .string()
     .describe(
-      'The content of the file as a utf8 string (complete file contents that will replace any existing file at this path)'
+      'The data of the file as a utf8 string (complete file contents that will replace any existing file at this path)'
     ),
 })
 

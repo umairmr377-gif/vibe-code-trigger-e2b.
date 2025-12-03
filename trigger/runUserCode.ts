@@ -4,7 +4,7 @@ import { task } from '@trigger.dev/sdk'
 interface RunUserCodePayload {
   code?: string
   command?: string
-  files?: Array<{ path: string; content: string }>
+  files?: Array<{ path: string; data: string }>
   sandboxId?: string
   timeout?: number
   ports?: number[]
@@ -54,7 +54,7 @@ export const runUserCode = task({
         await sandbox.files.write(
           files.map((file) => ({
             path: file.path,
-            data: file.content,
+            data: file.data,
           }))
         )
       }
